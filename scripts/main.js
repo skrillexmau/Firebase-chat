@@ -80,13 +80,21 @@ FriendlyChat.prototype.loadMessages = function() {
 };
 
 // Saves a new message on the Firebase DB.
-FriendlyChat.prototype.saveMessage = function(e) {
+FriendlyChat.prototype.saveMessage = function(e) { //Guardará los mensajes en la DataBase
   e.preventDefault();
   // Check that the user entered a message and is signed in.
-  if (this.messageInput.value && this.checkSignedInWithMessage()) {
-
-    // TODO(DEVELOPER): push new message to Firebase.
-
+  if (this.messageInput.value && this.checkSignedInWithMessage()) { //Chequeo de que alla un valor y que este sing-in
+    var currentUser = this.auth.currentUser;
+    this.messagesRef.push({
+      name: currentUser.displayName,
+      text: this.messageInput.value,
+      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png'
+    }).then(function (){
+      FriendlyChat.resetMaterialTextfield(this.messageInput); //Limpia el mensaje
+      this.toggleButton(); //
+    }.bind(this)).catch(function (error) {
+      console.error('Error escribiendo en la base de datos', error);
+    });
   }
 };
 
