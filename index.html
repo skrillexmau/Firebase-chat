@@ -108,6 +108,25 @@
 </div>
 
 <!-- Import and configure the Firebase SDK -->
+<script src="/__/firebase/4.1.1/firebase-app.js"></script>
+<script src="/__/firebase/4.1.1/firebase-auth.js"></script>
+<script src="/__/firebase/4.1.1/firebase-database.js"></script>
+<script src="/__/firebase/4.1.1/firebase-messaging.js"></script>
+<script src="/__/firebase/4.1.1/firebase-storage.js"></script>
+
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyD4P1ACLTdF8qbd-41S7AscHeft7Q2PcDg",
+    authDomain: "friendlychat-5ddd3.firebaseapp.com",
+    databaseURL: "https://friendlychat-5ddd3.firebaseio.com",
+    projectId: "friendlychat-5ddd3",
+    storageBucket: "gs://friendlychat-5ddd3.appspot.com/",
+    messagingSenderId: "762838035930"
+  };
+  firebase.initializeApp(config);
+</script>
+
 <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
 <!-- If you do not want to serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
 <script src="/__/firebase/4.1.3/firebase.js"></script>
