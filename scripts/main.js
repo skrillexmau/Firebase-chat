@@ -102,7 +102,12 @@ FriendlyChat.prototype.saveMessage = function(e) { //Guardará los mensajes en l
 FriendlyChat.prototype.setImageUrl = function(imageUri, imgElement) {
   imgElement.src = imageUri;
 
-  // TODO(DEVELOPER): If image is on Cloud Storage, fetch image URL and set img element's src.
+  if(imageUri.startsWith('gs://')){
+    imgElement.src = FriendlyChat.LOADING_IMAGE_URL;
+    this.storage.refFromURL(imageUri).getMetadata().then(function (metadata) {
+      imgElement.src = metadata.downloadURLs[0];
+    });
+  }
 };
 
 // Saves a new message containing an image URI in Firebase.
@@ -125,9 +130,21 @@ FriendlyChat.prototype.saveImageMessage = function(event) {
   }
   // Check if the user is signed-in
   if (this.checkSignedInWithMessage()) {
-
-    // TODO(DEVELOPER): Upload image to Firebase storage and add message.
-
+    var currentUser = this.auth.currentUser;
+    this.messagesRef.push({
+      name: currentUser.displayName,
+      imageUrl: FriendlyChat.LOADING_IMAGE_URL,
+      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png'
+    }).then(function (data) {
+      var uploadTask = this.storage.ref(currentUser.uid + '/' + Date.now() + '/' + file.name)
+                      .put(file, {'contentType': file.type});
+      uploadTask.on('state_changed', null, function (error) {
+        console.error('Ocurrió un error al cargar el archivo: ', error);
+      }, function (){
+        var filePath = uploadTask.snapshot.metadata.fullPath;
+        data.update({imageUrl: this.storage.ref(filePath).toString() });
+      }.bind(this));
+    }.bind(this));
   }
 };
 
