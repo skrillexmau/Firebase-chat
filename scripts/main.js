@@ -58,7 +58,7 @@ FriendlyChat.prototype.initFirebase = function() {
   // Inicializamos los metodos que usaremos
   this.auth = firebase.auth();
   this.database = firebase.database();
-  this.store = firebase.storage();
+  this.storage = firebase.storage();
 
   // Añadimos un eventListner cuando el usuario inicia sesión
   this.auth.onAuthStateChanged(this.onAuthStateChanged.bind(this)); //bind() crea una función ligada, y al usar this, hace una copia de la function principal
@@ -137,13 +137,16 @@ FriendlyChat.prototype.saveImageMessage = function(event) {
       photoUrl: currentUser.photoURL || '/images/profile_placeholder.png'
     }).then(function (data) {
       var uploadTask = this.storage.ref(currentUser.uid + '/' + Date.now() + '/' + file.name)
-                      .put(file, {'contentType': file.type});
+                       .put(file, {'contentType' : file.type});
+
+      //Añadir eventListner cuando se acomplete
       uploadTask.on('state_changed', null, function (error) {
-        console.error('Ocurrió un error al cargar el archivo: ', error);
-      }, function (){
+        console.error('Ocurrio un error al cargar el archivo: ', error);
+      }, function () {
+        // Obtenemos la ruta del archivo
         var filePath = uploadTask.snapshot.metadata.fullPath;
         data.update({imageUrl: this.storage.ref(filePath).toString() });
-      }.bind(this));
+      }.bind(this))
     }.bind(this));
   }
 };
